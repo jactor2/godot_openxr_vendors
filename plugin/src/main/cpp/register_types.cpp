@@ -74,6 +74,7 @@
 #include "extensions/openxr_htc_passthrough_extension_wrapper.h"
 #include "extensions/openxr_meta_boundary_visibility_extension_wrapper.h"
 #include "extensions/openxr_meta_environment_depth_extension_wrapper.h"
+#include "extensions/openxr_meta_simultaneous_hands_and_controllers_extension_wrapper.h"
 #include "extensions/openxr_meta_recommended_layer_resolution_extension_wrapper.h"
 #include "extensions/openxr_meta_spatial_entity_mesh_extension_wrapper.h"
 
@@ -166,6 +167,7 @@ void initialize_plugin_module(ModuleInitializationLevel p_level) {
 #ifdef META_HEADERS_ENABLED
 			GDREGISTER_CLASS(OpenXRMetaBoundaryVisibilityExtensionWrapper);
 #endif // META_HEADERS_ENABLED
+			GDREGISTER_CLASS(OpenXRMetaSimultaneousHandsAndControllersExtensionWrapper);
 
 			if (_get_bool_project_setting("xr/openxr/extensions/meta/passthrough")) {
 				_register_extension_with_openxr(OpenXRFbPassthroughExtensionWrapper::get_singleton());
@@ -246,6 +248,10 @@ void initialize_plugin_module(ModuleInitializationLevel p_level) {
 			}
 #endif // META_HEADERS_ENABLED
 
+			if (_get_bool_project_setting("xr/openxr/extensions/meta/simultaneous_hands_and_controllers")) {
+				_register_extension_with_openxr(OpenXRMetaSimultaneousHandsAndControllersExtensionWrapper::get_singleton());
+			}
+
 			if (_get_bool_project_setting("xr/openxr/extensions/htc/face_tracking")) {
 				_register_extension_with_openxr(OpenXRHtcFacialTrackingExtensionWrapper::get_singleton());
 			}
@@ -306,6 +312,9 @@ void initialize_plugin_module(ModuleInitializationLevel p_level) {
 
 			GDREGISTER_CLASS(OpenXRHybridApp);
 			Engine::get_singleton()->register_singleton("OpenXRHybridApp", OpenXRHybridApp::get_singleton());
+
+			// Register our simultaneous hands and controllers extension as singleton
+			_register_extension_as_singleton(OpenXRMetaSimultaneousHandsAndControllersExtensionWrapper::get_singleton());
 
 			// Only works with Godot 4.5 or later.
 			if (godot::internal::godot_version.minor >= 5) {
@@ -436,6 +445,7 @@ void add_plugin_project_settings() {
 #ifdef META_HEADERS_ENABLED
 	_add_bool_project_setting(project_settings, "xr/openxr/extensions/meta/boundary_visibility", false);
 #endif // META_HEADERS_ENABLED
+	_add_bool_project_setting(project_settings, "xr/openxr/extensions/meta/simultaneous_hands_and_controllers", false);
 
 	{
 		String collision_shape_2d_thickness = "xr/openxr/extensions/meta/scene_api/collision_shape_2d_thickness";
